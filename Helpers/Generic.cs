@@ -9,11 +9,13 @@ namespace mreader.Helpers
 {
 	internal class Generic
 	{
-		public static int ExtractNumber(string fileName)
+		public static long ExtractNumber(string fileName)
 		{
 			// Extract the first number from the filename
 			var match = Regex.Match(fileName, @"\d+");
-			return match.Success ? int.Parse(match.Value) : 0;
+			return match.Success && long.TryParse(match.Value, out var number)
+				? number
+				: 0;
 		}
 		public static bool IsImageFile(string fileName)
 		{

@@ -9,9 +9,7 @@ namespace mreader.Services
 		{
 			DirectoryInfo d = new(filePath);
 			var imageFiles = d.GetFiles("*.*", SearchOption.TopDirectoryOnly)
-			.Where(f => f.Extension.Equals(".jpg", StringComparison.OrdinalIgnoreCase) ||
-									f.Extension.Equals(".jpeg", StringComparison.OrdinalIgnoreCase) ||
-									f.Extension.Equals(".png", StringComparison.OrdinalIgnoreCase))
+			.Where(f => Generic.IsImageFile(f.FullName))
 			.OrderBy(f => Generic.ExtractNumber(f.Name))
 			.ToArray();
 
@@ -23,10 +21,7 @@ namespace mreader.Services
 
 			using var zip = ZipFile.OpenRead(filePath);
 			foreach (var entry in zip.Entries
-			.Where(e => !string.IsNullOrEmpty(e.Name) &&
-									(e.FullName.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
-										e.FullName.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) ||
-										e.FullName.EndsWith(".png", StringComparison.OrdinalIgnoreCase)))
+			.Where(e => !string.IsNullOrEmpty(e.Name) && Generic.IsImageFile(e.FullName))
 			.OrderBy(e => Generic.ExtractNumber(e.FullName)))
 			{
 				byte[] imageData;

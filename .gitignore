@@ -59,7 +59,6 @@ packages/
 *.nuget.cache
 
 # Xamarin / MAUI
-*.xaml.cs
 *.xaml.g.cs
 *.xaml.i.cs
 *.apk
