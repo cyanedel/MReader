@@ -2,20 +2,57 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="mreader.Views.Pages.ImageViewPage"
-             Title="Reader">
+             Title="Reader"
+             BackgroundColor="{AppThemeBinding Light=#F6F6F8, Dark=#101015}">
     <Grid RowDefinitions="Auto,*">
-        <Label x:Name="TitleLabel" Padding="16,12" FontSize="18" FontAttributes="Bold" LineBreakMode="TailTruncation" />
-        <CollectionView x:Name="Pages" Grid.Row="1" SelectionMode="None">
-            <CollectionView.ItemsLayout><LinearItemsLayout Orientation="Vertical" ItemSpacing="8" /></CollectionView.ItemsLayout>
-            <CollectionView.EmptyView><Label x:Name="EmptyLabel" Padding="24" HorizontalTextAlignment="Center" Text="No readable images were found." /></CollectionView.EmptyView>
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <VerticalStackLayout Padding="0,0,0,8" Spacing="4">
-                        <Image Source="{Binding Source}" Aspect="AspectFit" HorizontalOptions="Fill" />
-                        <Label Text="{Binding Name}" FontSize="11" TextColor="{StaticResource Gray500}" HorizontalTextAlignment="Center" />
-                    </VerticalStackLayout>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+        <Grid Padding="14,10" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#202025}" ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="8">
+            <Label x:Name="TitleLabel" FontSize="16" FontAttributes="Bold" LineBreakMode="TailTruncation" VerticalOptions="Center" />
+            <Button Grid.Column="1" Text="−" FontSize="20" Padding="8,2" MinimumHeightRequest="32" MinimumWidthRequest="32" Clicked="OnZoomOutClicked" />
+            <Button x:Name="ZoomButton" Grid.Column="2" Text="100%" FontSize="11" Padding="8,2" MinimumHeightRequest="32" Clicked="OnResetZoomClicked" />
+            <Button Grid.Column="3" Text="+" FontSize="18" Padding="8,2" MinimumHeightRequest="32" MinimumWidthRequest="32" Clicked="OnZoomInClicked" />
+            <Button Grid.Column="4" Text="Settings" FontSize="11" Padding="10,2" MinimumHeightRequest="32" Clicked="OnSettingsClicked" />
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <CollectionView x:Name="Pages" SelectionMode="None" ItemSizingStrategy="MeasureAllItems" SizeChanged="OnPagesSizeChanged">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="8" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.EmptyView>
+                    <Label x:Name="EmptyLabel" Padding="24" HorizontalTextAlignment="Center" Text="No readable images were found." />
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <ScrollView Orientation="{Binding PanOrientation}" HorizontalScrollBarVisibility="Never">
+                                <Image Source="{Binding Source}" Aspect="{Binding Aspect}" WidthRequest="{Binding PageWidth}" HeightRequest="{Binding PageHeight}" HorizontalOptions="Center" VerticalOptions="Center" />
+                            </ScrollView>
+                            <Grid.GestureRecognizers>
+                                <PinchGestureRecognizer PinchUpdated="OnPagePinchUpdated" />
+                            </Grid.GestureRecognizers>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Border x:Name="SettingsPanel" IsVisible="False" WidthRequest="280" Padding="16" Margin="16" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2A2A30}" Stroke="{AppThemeBinding Light=#D7D7DC, Dark=#4A4A52}" StrokeShape="RoundRectangle 14" HorizontalOptions="End" VerticalOptions="Start">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Reading settings" FontSize="17" FontAttributes="Bold" />
+                    <Label Text="Page fit" FontSize="12" TextColor="{StaticResource Gray500}" />
+                    <Picker x:Name="FitPicker" Title="Page fit" SelectedIndexChanged="OnFitChanged">
+                        <Picker.Items><x:String>Fill width</x:String><x:String>Fill height</x:String></Picker.Items>
+                    </Picker>
+                    <Label Text="Reading direction" FontSize="12" TextColor="{StaticResource Gray500}" />
+                    <Picker x:Name="DirectionPicker" Title="Reading direction" SelectedIndexChanged="OnDirectionChanged">
+                        <Picker.Items><x:String>Top to bottom</x:String><x:String>Left to right</x:String><x:String>Right to left</x:String></Picker.Items>
+                    </Picker>
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                        <Label Text="Space between images" VerticalOptions="Center" />
+                        <Switch x:Name="PageGapSwitch" Grid.Column="1" Toggled="OnPageGapToggled" />
+                    </Grid>
+                    <Label Text="Settings apply to all manga." FontSize="11" TextColor="{StaticResource Gray500}" />
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
     </Grid>
 </ContentPage>
